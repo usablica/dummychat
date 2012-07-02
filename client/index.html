@@ -28,6 +28,46 @@
             text-shadow: 1px 1px 0 black;
             width: 40px;
         }
+        .usr ul{
+            display: block;
+            position: absolute;
+            bottom: 35px;
+            left: -60px;
+            padding: 1px 5px;
+            background-color: rgb(225, 225, 225);
+            border-radius: 5px;
+            font-size: 10px;
+            list-style: none;
+            box-shadow: 1px 1px 5px rgba(50, 50, 50, 0.5);
+        }
+        .usr ul:after{
+            content: '';
+            display: block;
+            position: absolute;
+            width: 0;
+            height: 0;
+            bottom: -10px;
+            left: 50%;
+            margin-left: -40px;
+            border-top: 10px solid rgb(225, 225, 225);
+            border-right: 10px solid transparent;
+            border-left: 10px solid transparent;
+        }
+        .usr li{
+            display: block;
+            padding: 10px 2px;
+            color: #555;
+            text-shadow: 0 0 1px rgba(50, 50, 50, .3);
+        }
+        .usr li:not(:last-child){
+            border-bottom: 1px solid rgba(150, 150, 150, .5);
+        }
+        #shout{
+            border: 1px solid rgb(150, 150, 150);
+            border-radius: 20px;
+            box-shadow: 0 0 3px rgba(0, 0, 0, .2);
+            padding: 3px 7px;
+        }
         .reid{
             background-image: url('images/ReidWalkSouth3.gif');
         }
@@ -71,6 +111,8 @@
             text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
             top: 13px;
         }
+
+
     </style>
 </head>
 
@@ -86,23 +128,21 @@
     
     //...dummy chat
     var dummyChat = {
-        connect: function(){
-            
-          var socket = io.connect('http://localhost:8080');
+        socket: io.connect('http://localhost:8080'),
 
-          socket.on('connect', function () {
+        connect: function(){
+          dummyChat.socket.on('connect', function () {
               
             //create and set the client name
-            socket.emit('setName', { name: 'client' + parseInt(Math.random() * 100) });
+            dummyChat.socket.emit('setName', { name: 'client' + parseInt(Math.random() * 100) });
 
             //get generated user info on server and set to a global variable
-            socket.on('userInfo', function(data){
-                userInfo = JSON.parse(data);
+            dummyChat.socket.on('userInfo', function(data){
+                userInfo = data;
             });
 
             //get all available users on server and draw the farm
-            socket.on('users', function (msg) {
-                var usrsList = JSON.parse(msg);
+            dummyChat.socket.on('users', function (usrsList) {
                 dummyChat.redraw(usrsList);
                 
                 $("#countOfUsers").children("span#number").html(usrsList.length);
@@ -110,13 +150,12 @@
                 $("#farm").children("#usr" + userInfo.clientName).addClass("me");
             });
 
-            socket.on('userChangePos', function(userObj){
+            dummyChat.socket.on('userChangePos', function(userObj){
 
                 if(dummyChat.moveTimer !== null){
                     clearTimeout(dummyChat.moveTimer);
                 }
-            
-                userObj = JSON.parse(userObj);
+                
                 var userJs = $("#farm").children("#usr" + userObj.clientName);
                 var classN = userJs[0].className.replace(/reid[0-9]/g,'');
                 userJs.css("top",userObj.xPos + "%").css("left",userObj.yPos + "%");
@@ -126,6 +165,10 @@
                     userJs[0].className = classN;
                 }, 500);
                 
+            });
+
+            dummyChat.socket.on('userShout', function(shoutObj) {
+                dummyChat.shout(shoutObj);
             });
 
             dummyChat.accelerator = 0;
@@ -138,16 +181,16 @@
                 
                 switch(keyObj.keyCode){
                     case 38:
-                        socket.emit("changePos", { dir: ARROW_UP, val: val });
+                        dummyChat.socket.emit("changePos", { dir: ARROW_UP, val: val });
                         break;
                     case 40:
-                        socket.emit("changePos", { dir: ARROW_DOWN, val: val });
+                        dummyChat.socket.emit("changePos", { dir: ARROW_DOWN, val: val });
                         break;
                     case 39:
-                        socket.emit("changePos", { dir: ARROW_RIGHT, val: val });
+                        dummyChat.socket.emit("changePos", { dir: ARROW_RIGHT, val: val });
                         break;
                     case 37:
-                        socket.emit("changePos", { dir: ARROW_LEFT, val: val });
+                        dummyChat.socket.emit("changePos", { dir: ARROW_LEFT, val: val });
                         break;
                 }
 
@@ -164,7 +207,7 @@
 
 
 
-            socket.on("error", function(errCode){
+            dummyChat.socket.on("error", function(errCode){
                 switch(errCode){
                     case ERR_DUPLICATE_CLIENT_NAME:
                         alert("This username is already taken, please choose another one.");
@@ -176,15 +219,44 @@
 
           });
         },
+        shout: function(shoutObj) {
+            var userDom = $("#farm").children("#usr" + shoutObj.clientName)[0];
+
+            $("ul li #shout", userDom).parent().before("<li>" + shoutObj.text + "</li>");
+        },
+        shoutAck: function() {
+            // In Next Version
+        },
         redraw: function(users){
             $("#farm").children("div.usr").remove()
             for(var i = 0 ; i < users.length ; i++){
                 var user = users[i];
-                $("#farm").append("<div title='"+ user.clientName +"' id='usr"+ user.clientName +"' class='usr reid' style='top: " + (user.xPos) + "%;left:" + (user.yPos) + "%;'><span>" + user.clientName + "</span></div>");
+                var me = (user.clientName == userInfo.clientName);
+                var shouts = (me? "<li><input type='text' id='shout' placeholder='Shout...' /></li>" : "");
+
+                if(user.shouts.length > 0) {
+                    for(var i in user.shouts){
+                        shouts = "<li>" + user.shouts[i] + "</li>" + shouts;
+                    }
+                }
+
+                $("#farm").append("<div title='"+ user.clientName +"' id='usr"+ user.clientName +"' class='usr reid " + (me? "me" : "") + "' style='top: " + (user.xPos) + "%;left:" + (user.yPos) + "%;'><ul " + (!me? "style='display:none;'" : "") + ">" + shouts + "</ul><span>" + user.clientName + "</span></div>");
             }
+
+            if(me) dummyChat.bindShout();
+        },
+        bindShout: function() {
+            $("#shout").keypress(function(e){//"document" works fine!
+                var code = e.keyCode || e.which;
+                if(code == 13 && $("#shout").val() != "") {
+                    //TODO: Add acknowledge for the next Version
+                    dummyChat.socket.emit("shout", e.target.value);
+                    e.target.value = "";
+                }
+            });
         }
-    };  
-  
+    };
+
     dummyChat.connect();
   
 </script>
