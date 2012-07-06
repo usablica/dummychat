@@ -234,25 +234,26 @@
             // In Next Version
         },
         redraw: function(users){
-            $("#farm").children("div.usr").remove()
+            $("#farm").children("div.usr").remove();
             for(var i = 0 ; i < users.length ; i++){
                 var user = users[i];
                 var me = (user.clientName == userInfo.clientName);
                 var shouts = (me? "<li><input type='text' id='shout' placeholder='Shout...' /></li>" : "");
+                var shoutCnt = user.shouts.length;
 
-                if(user.shouts.length > 0) {
+                if(shoutCnt > 0) {
                     for(var i in user.shouts){
                         shouts = "<li>" + user.shouts[i] + "</li>" + shouts;
                     }
                 }
 
-                $("#farm").append("<div title='"+ user.clientName +"' id='usr"+ user.clientName +"' class='usr reid " + (me? "me" : "") + "' style='top: " + (user.xPos) + "%;left:" + (user.yPos) + "%;'><ul " + (!me? "style='display:none;'" : "") + ">" + shouts + "</ul><span>" + user.clientName + "</span></div>");
-            }
+                $("#farm").append("<div title='"+ user.clientName +"' id='usr"+ user.clientName +"' class='usr reid " + (me? "me" : "") + "' style='top: " + (user.xPos) + "%;left:" + (user.yPos) + "%;'><ul " + ((!me && shoutCnt < 1)? "style='display:none;'" : "") + ">" + shouts + "</ul><span>" + user.clientName + "</span></div>");
 
-            if(me) dummyChat.bindShout();
+                if(me) dummyChat.bindShout();
+            }
         },
         bindShout: function() {
-            $("#shout").keypress(function(e){//"document" works fine!
+            $("#shout").keypress(function(e){
                 var code = e.keyCode || e.which;
                 if(code == 13 && $("#shout").val() != "") {
                     //TODO: Add acknowledge for the next Version
