@@ -126,6 +126,9 @@
     const ARROW_RIGHT   = 4;
     
     const ERR_DUPLICATE_CLIENT_NAME = 1;
+
+    // Maximum number of shouts to view
+    const MAX_SHOUT_COUNT = 4;
     
     //...dummy chat
     var dummyChat = {
@@ -222,6 +225,11 @@
         },
         shout: function(shoutObj) {
             var userDom = $("#farm").children("#usr" + shoutObj.clientName)[0];
+            var shoutFieldItemDom = $("ul li #Shout").parent();
+            var shoutCnt = $(userDom).find("ul li").not(shoutFieldItemDom).length;
+            if(shoutCnt >= MAX_SHOUT_COUNT) {
+                $(userDom).find("ul li:first-child").remove();
+            }
 
             if(userInfo.clientName == shoutObj.clientName) {
                 $("ul li #shout", userDom).parent().before("<li>" + shoutObj.text + "</li>");
@@ -242,7 +250,7 @@
                 var shoutCnt = user.shouts.length;
 
                 if(shoutCnt > 0) {
-                    for(var i in user.shouts){
+                    for(var i = 0; i < shoutCnt && i < MAX_SHOUT_COUNT; i++){
                         shouts = "<li>" + user.shouts[i] + "</li>" + shouts;
                     }
                 }
