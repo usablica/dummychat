@@ -18,7 +18,9 @@ Dummy chat is generally developed for educational purposes and biginners who wan
 ### Installation
 -----------------
 After downloading and extracting the package from the link below, you need to run the NodeJS *server* from server directory
-	$ node srv.js
+```
+$ node srv.js
+```
 
 Then you can go to *client* directory and open *index.html* with your favorite browser.
 
