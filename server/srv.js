@@ -43,13 +43,14 @@ io.sockets.on('connection', function (socket) {
             usrObj.clientName = data.name;
             usrObj.xPos = Math.random() * 100;
             usrObj.yPos = Math.random() * 100;
+            usrObj.shouts = [];
             users.push(usrObj);
 
             //send user information
-            socket.emit("userInfo", JSON.stringify(usrObj));
+            socket.emit("userInfo", usrObj);
 
             //broadcast message to all users
-            io.sockets.emit("users", JSON.stringify(populateUsers(["sessionId"])));
+            io.sockets.emit("users", populateUsers(["sessionId"]));
         }        
         
     });
@@ -78,8 +79,17 @@ io.sockets.on('connection', function (socket) {
         userObj.arrowDir = posObj.dir;
         
         //broadcast message to all users
-        io.sockets.emit("userChangePos", JSON.stringify(userObj));
+        io.sockets.emit("userChangePos", userObj);
         
+    });
+
+    socket.on("shout", function(shoutText) {
+        var user = getSingleClient("sessionId", socket.id);
+        var index = user[1];
+
+        users[index].shouts.push(shoutText);
+
+        io.sockets.emit("userShout", { text: shoutText, clientName: user[0].clientName });
     });
 
     socket.on('disconnect', function () {
@@ -92,7 +102,7 @@ io.sockets.on('connection', function (socket) {
         }
         
         //broadcast message to all users
-        io.sockets.emit("users", JSON.stringify(populateUsers(["sessionId"])));
+        io.sockets.emit("users", populateUsers(["sessionId"]));
     });
     
     
