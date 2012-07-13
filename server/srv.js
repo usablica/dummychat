@@ -1,4 +1,5 @@
 var io = require('socket.io').listen(8080);
+var sanitize = require('validator').sanitize;
 
 /**
  *  our users db
@@ -27,6 +28,8 @@ const ARROW_RIGHT   = 4;
 io.sockets.on('connection', function (socket) {
 
     socket.on("setName", function(data){
+
+        data.name = sanitize(data.name).entityEncode();
         
         var isMatched = getSingleClient("clientName", data.name);
         
@@ -84,6 +87,7 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on("shout", function(shoutText) {
+        shoutText = sanitize(shoutText).entityEncode();
         var user = getSingleClient("sessionId", socket.id);
         var index = user[1];
 
