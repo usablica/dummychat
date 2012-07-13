@@ -71,6 +71,7 @@
             border-radius: 20px;
             box-shadow: 0 0 3px rgba(50, 50, 50, .2);
             padding: 3px 7px;
+            width: 100%;
         }
         .reid{
             background-image: url('images/ReidWalkSouth3.gif');
@@ -180,7 +181,7 @@
 
             dummyChat.accelerator = 0;
             dummyChat.accelLastTimer = null;
-            $(document).keypress(function(keyObj){
+            $(document).keydown(function(keyObj){
 
                 var val = 0.2;
                 dummyChat.accelerator += 0;
@@ -228,7 +229,7 @@
         },
         shout: function(shoutObj) {
             var userDom = $("#farm").children("#usr" + shoutObj.clientName)[0];
-            var shoutDom = $("<li style='display:none;'>" + shoutObj.text + "</li>");
+            var shoutDom = $("<li dir='auto' style='display:none;'>" + shoutObj.text + "</li>");
             var shoutFieldItemDom = $("ul li #shout").parent();
             var shoutCnt = $(userDom).find("ul li").not(shoutFieldItemDom).length;
             if(shoutCnt >= MAX_SHOUT_COUNT) {
@@ -258,8 +259,8 @@
                 var shoutCnt = user.shouts.length;
 
                 if(shoutCnt > 0) {
-                    for(var i = 0; i < shoutCnt && i < MAX_SHOUT_COUNT; i++){
-                        shouts = "<li>" + user.shouts[i] + "</li>" + shouts;
+                    for(var i = shoutCnt-1, j = 0; i >= 0 && j < MAX_SHOUT_COUNT; i--, j++){
+                        shouts = "<li dir='auto'>" + user.shouts[i] + "</li>" + shouts;
                     }
                 }
 
