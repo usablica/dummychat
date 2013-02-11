@@ -1,5 +1,5 @@
-var io = require('socket.io').listen(8080);
-var sanitize = require('validator').sanitize;
+var io = require('socket.io').listen(8080)
+,   sanitize = require('validator').sanitize;
 
 /**
  *  our users db
@@ -13,6 +13,7 @@ var users = [];
  *  Error codes
  */
 const ERR_DUPLICATE_CLIENT_NAME = 1;
+const ERR_TOO_LONG_SHOUT        = 2;
 
 
 /**
@@ -23,7 +24,23 @@ const ARROW_UP      = 1;
 const ARROW_DOWN    = 2;
 const ARROW_LEFT    = 3;
 const ARROW_RIGHT   = 4;
+
+/**
+ *  message code
+ *
+ */
+const ERROR = "err";
+const USER_INFO = "u";
+const USERS = "us";
+const USER_CHANGE_POSITION = "cp";
+const USER_SHOUT = "s";
     
+io.configure('production', function(){
+  io.set('transports', [
+    'websocket'
+  , 'flashsocket'
+  ]);
+});
 
 io.sockets.on('connection', function (socket) {
 
@@ -36,7 +53,7 @@ io.sockets.on('connection', function (socket) {
         if(isMatched){
         
             //send an error to client
-            socket.emit("error", ERR_DUPLICATE_CLIENT_NAME);
+            socket.emit(ERROR, ERR_DUPLICATE_CLIENT_NAME);
         
         } else {
             
@@ -44,16 +61,17 @@ io.sockets.on('connection', function (socket) {
             var usrObj = new Object();
             usrObj.sessionId = socket.id;
             usrObj.clientName = data.name;
-            usrObj.xPos = Math.random() * 100;
-            usrObj.yPos = Math.random() * 100;
+            usrObj.displayName = data.displayName;
+            usrObj.xPos = Math.random() * 77 + 14;
+            usrObj.yPos = Math.random() * 87 + 4;
             usrObj.shouts = [];
             users.push(usrObj);
 
             //send user information
-            socket.emit("userInfo", usrObj);
+            socket.emit(USER_INFO, usrObj);
 
             //broadcast message to all users
-            io.sockets.emit("users", populateUsers(["sessionId"]));
+            io.sockets.emit(USERS, populateUsers(["sessionId"]));
         }        
         
     });
@@ -62,7 +80,6 @@ io.sockets.on('connection', function (socket) {
         
         var user = getSingleClient("sessionId", socket.id);
         var userObj = user[0];
-        
         switch(posObj.dir){
             case ARROW_UP:
                 userObj.xPos += -posObj.val;
@@ -82,18 +99,23 @@ io.sockets.on('connection', function (socket) {
         userObj.arrowDir = posObj.dir;
         
         //broadcast message to all users
-        io.sockets.emit("userChangePos", userObj);
+        io.sockets.emit(USER_CHANGE_POSITION, { d : posObj.dir, clientName: user[0].clientName });
         
     });
 
     socket.on("shout", function(shoutText) {
         shoutText = sanitize(shoutText).entityEncode();
-        var user = getSingleClient("sessionId", socket.id);
-        var index = user[1];
+        if(shoutText.length <= 70){
+            var user = getSingleClient("sessionId", socket.id);
+            var index = user[1];
 
-        users[index].shouts.push(shoutText);
+            users[index].shouts.push(shoutText);
 
-        io.sockets.emit("userShout", { text: shoutText, clientName: user[0].clientName });
+            io.sockets.emit(USER_SHOUT, { text: shoutText, clientName: user[0].clientName });
+        }
+        else{
+            socket.emit(ERROR, ERR_TOO_LONG_SHOUT);
+        }
     });
 
     socket.on('disconnect', function () {
@@ -106,7 +128,7 @@ io.sockets.on('connection', function (socket) {
         }
         
         //broadcast message to all users
-        io.sockets.emit("users", populateUsers(["sessionId"]));
+        io.sockets.emit(USERS, populateUsers(["sessionId"]));
     });
     
     
