@@ -9,6 +9,45 @@
         body{
             font-family: tahoma, arial, verdana;
         }
+        #welcome-scr, #loading-scr{
+            width: 455px;
+            margin: 0px auto;
+            padding-top: 100px;
+        }
+        #loading-scr{
+            padding-top: 16px !important;
+            width: 158px !important;
+            color: rgba(255, 255, 255, 1) ;
+            text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.59);
+
+        }
+        #hud, #share{
+            display: inline-block;
+            min-width: 200px;
+        }
+        #logo-big{
+            background-image: url('images/symbol.gif');
+            background-position: 0 0;
+            width: 454px;
+            height: 86px;
+        }
+        #logo-small{
+            background-image: url('images/symbol.gif');
+            background-position: -373 -86;
+            width: 57px;
+            height: 33px;
+            display: inline-block;
+            margin: 10 5 0 10px;
+        }
+        #login-btn{
+            background-image: url('images/symbol.gif');
+            background-position: 0 -86px;
+            width: 373px;
+            height: 72px;
+            margin-top: 40px;
+            margin-left: 40px;
+            cursor: pointer;
+        }
         .usr{
             position: absolute;
             height: 30px;
@@ -20,16 +59,19 @@
             bottom: -18px;
             color: rgba(255, 255, 255, 0.8);
             font-size: 10px;
-            left: -16px;
+            left: -30px;
             padding: 1px 5px;
             position: absolute;
             text-align: center;
             text-shadow: 1px 1px 0 black;
-            width: 40px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            min-width: 60px;
         }
         .usr ul{
             display: block;
             position: absolute;
+            direction: rtl;
             width: 163px;
             bottom: 45px;
             left: -60px;
@@ -89,32 +131,76 @@
             background-image: url('images/ReidWalkSouth.gif');
         }
         .me span{
-            background-color: blue !important;
+            background-color: #fc0 !important;
+            color: rgba(0, 0, 0, 0.8) !important;
+            text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.59) !important;
+            font-weight: bold !important;
         }
         #world{
-            background-image: url('images/map.png');
+            background-image: url('images/field.gif');
+            height: 100%;
+            width: 100%;
+        }
+        #particle{
+            background-image: url('images/particle.gif');
             height: 100%;
             width: 100%;
         }
         .numberOfUsers{
             left: 0;
             margin-left: 8px;
-            position: relative;
+            position: absolute;
             top: 0;
         }
         .numberOfUsers span#number{
-            color: rgba(0, 0, 0, 0.3);
+            color: rgba(255, 255, 255, 1);
             font-family: georgia,verdana,arial,tahoma;
             font-size: 42px;
             font-weight: bold;
+            text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
         }
-        .numberOfUsers span#online{
-            color: rgba(0, 0, 0, 0.5);
+        .numberOfUsers span#part-title{
+            color: rgba(255, 255, 255, 1);
             font-family: verdana;
             font-size: 11px;
-            position: absolute;
-            text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
+            position: relative;
+            text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+            top: -25px;
+            font-weight: bold;
+        }
+        .numberOfUsers span#your-name{
+            color: rgba(255, 255, 255, 0.6);
+            font-family: verdana;
+            font-size: 11px;
+            position: relative;
+            text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+            left: -45px;
+            font-weight: bold;
+        }
+        .numberOfUsers span#username{
+            color: rgba(48, 48, 48, 0.75);
+            font-family: verdana;
+            font-size: 12px;
+            text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.4);
             top: 13px;
+            font-weight: bold;
+            background-color: #ffcc00;
+            padding: 4px;
+            box-shadow: 1px 1px 0 rgba(0,0,0,0.4);
+            border-radius: 5px;
+        }
+        .numberOfUsers span.share-btn{
+            position: relative;
+            display: inline-block;
+            max-width: 90px;
+        }
+        #twitter{background-color: #0cf;}
+        #facebook{background-color: #369;}
+        #gplus{background-color: #c00;}
+        
+        .numberOfUsers span.share-btn a{
+            text-decoration: none;
+            color: inherit;
         }
 
 
@@ -122,14 +208,89 @@
 </head>
 
 <body>
+    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+<script type="text/javascript">
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+    <div id="fb-root"></div>
+<script>
+  window.fbAsyncInit = function() {
+    // init the FB JS SDK
+    FB.init({
+      appId      : '185470741576931', // App ID from the App Dashboard
+      channelUrl : '//usabli.ca/dummychat/demo', // Channel File for x-domain communication
+      status     : true, // check the login status upon init?
+      cookie     : true, // set sessions cookies to allow your server to access the session?
+      xfbml      : true  // parse XFBML tags on this page?
+    });
+    FB.getLoginStatus(function(response) {
+  if (response.status === 'connected') {
+    // connected
+    FB.api('/me', function(response) { play(response.name); });
+  } else if (response.status === 'not_authorized') {
+    // not_authorized
+    deprepare();
+  } else {
+    // not_logged_in
+    deprepare();
+  }
+ });
+    // Additional initialization code such as adding Event Listeners goes here
+    $("#login-btn").click(function() {
+  login();
+});
+
+  };
+
+  // Load the SDK's source Asynchronously
+  // Note that the debug version is being actively developed and might 
+  // contain some type checks that are overly strict. 
+  // Please report such bugs using the bugs tool.
+  (function(d, debug){
+     var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement('script'); js.id = id; js.async = true;
+     js.src = "//connect.facebook.net/en_US/all" + (debug ? "/debug" : "") + ".js";
+     ref.parentNode.insertBefore(js, ref);
+   }(document, /*debug*/ false));
+   
+   function login() {
+    FB.login(function(response) {
+        if (response.authResponse) {
+            // connected
+            FB.api('/me', function(response) { play(response.name); });
+            
+        } else {
+            // cancelled
+            alert("you have not our permission to play!");
+        }
+    });
+}
+</script>
     <script type="text/javascript">
-    
+    function play(userDisplayName){
+        prepare();
     const ARROW_UP      = 1;
     const ARROW_DOWN    = 2;
     const ARROW_LEFT    = 3;
     const ARROW_RIGHT   = 4;
     
     const ERR_DUPLICATE_CLIENT_NAME = 1;
+    const ERR_TOO_LONG_SHOUT = 2;
+
+    /**
+     *  message code
+     *
+     */
+    const ERROR = "err";
+    const USER_INFO = "u";
+    const USERS = "us";
+    const USER_CHANGE_POSITION = "cp";
+    const USER_SHOUT = "s";
 
     // Maximum number of shouts to view
     const MAX_SHOUT_COUNT = 4;
@@ -142,32 +303,53 @@
           dummyChat.socket.on('connect', function () {
               
             //create and set the client name
-            dummyChat.socket.emit('setName', { name: 'client' + parseInt(Math.random() * 100) });
+            dummyChat.socket.emit('setName', { name: 'client' + parseInt(Math.random() * 100), displayName: userDisplayName });
 
             //get generated user info on server and set to a global variable
-            dummyChat.socket.on('userInfo', function(data){
+            dummyChat.socket.on(USER_INFO, function(data){
                 userInfo = data;
             });
 
             //get all available users on server and draw the farm
-            dummyChat.socket.on('users', function (usrsList) {
+            dummyChat.socket.on(USERS, function (usrsList) {
                 dummyChat.redraw(usrsList);
                 
-                $("#countOfUsers").children("span#number").html(usrsList.length);
+                $("#countOfUsers #hud").children("span#number").html(usrsList.length);
+                $("#countOfUsers #hud #your-name").children("span#username").html(userInfo.displayName);
+                $("#username").html(userInfo.displayName);
                 
                 $("#farm").children("#usr" + userInfo.clientName).addClass("me");
             });
 
-            dummyChat.socket.on('userChangePos', function(userObj){
+            dummyChat.socket.on(USER_CHANGE_POSITION, function(moveObj){
 
                 if(dummyChat.moveTimer !== null){
                     clearTimeout(dummyChat.moveTimer);
                 }
                 
-                var userJs = $("#farm").children("#usr" + userObj.clientName);
+                var userJs = $("#farm").children("#usr" + moveObj.clientName);
                 var classN = userJs[0].className.replace(/reid[0-9]/g,'');
-                userJs.css("top",userObj.xPos + "%").css("left",userObj.yPos + "%");
-                userJs[0].className = classN + " reid" + userObj.arrowDir;
+
+                var distance = 0.2;
+                var currentX = parseFloat(userJs.css("top"));
+                var currentY = parseFloat(userJs.css("left"));
+
+                switch(moveObj.d){
+                    case ARROW_UP:
+                        currentX += -distance;
+                        break;
+                    case ARROW_DOWN:
+                        currentX += distance;
+                        break;
+                    case ARROW_RIGHT:
+                        currentY += distance;
+                        break;
+                    case ARROW_LEFT:
+                        currentY += -distance;
+                        break;
+                }
+                userJs.css("top",currentX + "%").css("left",currentY + "%");
+                userJs[0].className = classN + " reid" + moveObj.d;
                 
                 dummyChat.moveTimer = setTimeout(function(){
                     userJs[0].className = classN;
@@ -175,7 +357,7 @@
                 
             });
 
-            dummyChat.socket.on('userShout', function(shoutObj) {
+            dummyChat.socket.on(USER_SHOUT, function(shoutObj) {
                 dummyChat.shout(shoutObj);
             });
 
@@ -189,16 +371,16 @@
                 
                 switch(keyObj.keyCode){
                     case 38:
-                        dummyChat.socket.emit("changePos", { dir: ARROW_UP, val: val });
+                            dummyChat.socket.emit("changePos", { dir: ARROW_UP, val: val });
                         break;
                     case 40:
-                        dummyChat.socket.emit("changePos", { dir: ARROW_DOWN, val: val });
+                            dummyChat.socket.emit("changePos", { dir: ARROW_DOWN, val: val });
                         break;
                     case 39:
-                        dummyChat.socket.emit("changePos", { dir: ARROW_RIGHT, val: val });
+                            dummyChat.socket.emit("changePos", { dir: ARROW_RIGHT, val: val });
                         break;
                     case 37:
-                        dummyChat.socket.emit("changePos", { dir: ARROW_LEFT, val: val });
+                            dummyChat.socket.emit("changePos", { dir: ARROW_LEFT, val: val });
                         break;
                 }
 
@@ -213,12 +395,13 @@
 */
             });
 
-
-
-            dummyChat.socket.on("error", function(errCode){
+            dummyChat.socket.on(ERROR, function(errCode){
                 switch(errCode){
                     case ERR_DUPLICATE_CLIENT_NAME:
                         alert("This username is already taken, please choose another one.");
+                        break;
+                    case ERR_TOO_LONG_SHOUT:
+                        alert("Too long shout! ain't nobody got time for read that.");
                         break;
                     default:
                         alert("Ooops! An error occured! :-[");
@@ -229,7 +412,7 @@
         },
         shout: function(shoutObj) {
             var userDom = $("#farm").children("#usr" + shoutObj.clientName)[0];
-            var shoutDom = $("<li dir='auto' style='display:none;'>" + shoutObj.text + "</li>");
+            var shoutDom = $("<li dir='auto' style='display:none;'><BDO>" + shoutObj.text + "</BDO></li>");
             var shoutFieldItemDom = $("ul li #shout").parent();
             var shoutCnt = $(userDom).find("ul li").not(shoutFieldItemDom).length;
             if(shoutCnt >= MAX_SHOUT_COUNT) {
@@ -255,16 +438,16 @@
             for(var i = 0 ; i < users.length ; i++){
                 var user = users[i];
                 var me = (user.clientName == userInfo.clientName);
-                var shouts = (me? "<li><input type='text' id='shout' placeholder='Shout...' /></li>" : "");
+                var shouts = (me? "<li><input dir='auto' type='text' id='shout' placeholder='Shout...' /></li>" : "");
                 var shoutCnt = user.shouts.length;
 
                 if(shoutCnt > 0) {
                     for(var i = shoutCnt-1, j = 0; i >= 0 && j < MAX_SHOUT_COUNT; i--, j++){
-                        shouts = "<li dir='auto'>" + user.shouts[i] + "</li>" + shouts;
+                        shouts = "<li dir='auto' style='display:none;'><BDO>" + user.shouts[i] + "</BDO></li>" + shouts;
                     }
                 }
 
-                $("#farm").append("<div title='"+ user.clientName +"' id='usr"+ user.clientName +"' class='usr reid " + (me? "me" : "") + "' style='top: " + (user.xPos) + "%;left:" + (user.yPos) + "%;'><ul " + ((!me && shoutCnt < 1)? "style='display:none;'" : "") + ">" + shouts + "</ul><span>" + user.clientName + "</span></div>");
+                $("#farm").append("<div title='"+ user.clientName +"' id='usr"+ user.clientName +"' class='usr reid " + (me? "me" : "") + "' style='top: " + (user.xPos) + "%;left:" + (user.yPos) + "%;'><ul " + ((!me && shoutCnt < 1)? "style='display:none;'" : "") + ">" + shouts + "</ul><span>" + user.displayName + "</span></div>");
 
                 if(me) dummyChat.bindShout();
             }
@@ -282,16 +465,50 @@
     };
 
     dummyChat.connect();
-  
+}
+var prepare = function(){
+    $("#welcome-scr").css("display","none");
+    $("#loading-scr").css("display","none");
+    $("#particle").css("display","");
+    $("#hud").css("display","");
+}
+var deprepare = function(){
+    $("#welcome-scr").css("display","");
+    $("#loading-scr").css("display","none");
+    $("#particle").css("display","none");
+    $("#hud").css("display","none");
+}
 </script>
 
 <div id="world">
     <div id="countOfUsers" class="numberOfUsers">
-        <span id="number"></span>
-        <span id="online">online</span>
+        <span id="logo-small"></span>
+        <div id="hud" style="display:none;">
+            <span id="number"> </span>
+            <span id="part-title">online</span>
+            <span id="your-name">you are: <span id="username"></span></span>
+        </div>
+        <div id="share">
+            <span id="number">|</span>
+            <span id="part-title">share to:</span>
+            <span class="share-btn" style="left: -64px;top: 5px;"><a href="https://twitter.com/share" class="twitter-share-button" data-text="دامی‌چت بازی کنید! :)" data-via="usablica" data-hashtags="DummyChat">Tweet</a></span>
+            <span class="share-btn" style="left: -60px;top: 2px;"><div class="fb-like" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-font="verdana"></div></span>
+            <span class="share-btn" style="left: -41px;top: 5px;"><div class="g-plusone" data-size="medium"></div></span>
+        </div>
     </div>
-    <div id="farm">
+    <div id="welcome-scr" style="display:none;">
+        <div id="logo-big">
+        </div>
+        <div id="login-btn">
+        </div>
+    </div>
+    <div id="loading-scr">
+        <h1>loading ...</h1>
+    </div>
+    <div id="particle" style="display:none;">
+        <div id="farm">
         
+        </div>
     </div>
 </div>
 
